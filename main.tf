@@ -39,7 +39,7 @@ resource "azurerm_virtual_desktop_host_pool" "wvd_pool1" {
   maximum_sessions_allowed         = 1
 
   registration_info {
-    expiration_date = "2021-03-01T08:00:00Z"
+    expiration_date = "2021-03-01T08:00:00Z"               # Must be set to a time between 1 hour in the future & 27 days in the future
   }
 }
 
@@ -57,7 +57,7 @@ resource "azurerm_virtual_desktop_host_pool" "wvd_pool2" {
   maximum_sessions_allowed         = 1
 
   registration_info {
-    expiration_date = "2021-03-01T08:00:00Z"
+    expiration_date = "2021-03-01T08:00:00Z"               # Must be set to a time between 1 hour in the future & 27 days in the future
   }
 }
 
@@ -84,15 +84,15 @@ resource "azurerm_virtual_desktop_application_group" "wvd_app_group2" {
 }
 
 # Assign Azure AD users/groups to App Groups
-resource "azurerm_role_assignment" "wvd_app_group" {
+resource "azurerm_role_assignment" "wvd_role_assignment1" {
   scope                = azurerm_virtual_desktop_application_group.wvd_app_group1.id
   role_definition_name = "Desktop Virtualization User"
   principal_id         = "Azure AD Object ID of User / Group"
 }
 
 # WVD Workspace
-resource "azurerm_virtual_desktop_workspace" "wvd_workspace" {
-  name                = "WorkspaceNameGoesHere"
+resource "azurerm_virtual_desktop_workspace" "wvd_workspace1" {
+  name                = "Workspace1NameGoesHere"
   resource_group_name = azurerm_resource_group.wvd_rg.name
   location            = azurerm_resource_group.wvd_rg.location
   friendly_name       = "First WVD Workspace"
@@ -101,7 +101,7 @@ resource "azurerm_virtual_desktop_workspace" "wvd_workspace" {
 
 # Connect App Groups to Workspaces
 resource "azurerm_virtual_desktop_workspace_application_group_association" "wvd_workspace_appgroup" {
-  workspace_id         = azurerm_virtual_desktop_workspace.wvd_workspace.id
+  workspace_id         = azurerm_virtual_desktop_workspace.wvd_workspace1.id
   application_group_id = azurerm_virtual_desktop_application_group.wvd_app_group1.id
 }
 
@@ -110,7 +110,7 @@ resource "azurerm_virtual_desktop_workspace_application_group_association" "wvd_
 #----------------------------------
 
 # Create a NIC for the Session Host VM
-resource "azurerm_network_interface" "wvd_vm_nic" {
+resource "azurerm_network_interface" "wvd_vm1_nic" {
   name                = "NicNameGoesHere"
   resource_group_name = azurerm_resource_group.wvd_rg.name
   location            = azurerm_resource_group.wvd_rg.location
@@ -123,12 +123,12 @@ resource "azurerm_network_interface" "wvd_vm_nic" {
 }
 
 # Create the Session Host VM
-resource "azurerm_windows_virtual_machine" "wvd_vm" {
+resource "azurerm_windows_virtual_machine" "wvd_vm1" {
   name                  = "VMNameGoesHere"
   resource_group_name   = azurerm_resource_group.wvd_rg.name
   location              = azurerm_resource_group.wvd_rg.location
   size                  = "Standard_B1s"
-  network_interface_ids = [ azurerm_network_interface.wvd_vm_nic.id ]
+  network_interface_ids = [ azurerm_network_interface.wvd_vm1_nic.id ]
   provision_vm_agent    = true
   timezone              = "Central Standard Time"
   
@@ -136,7 +136,7 @@ resource "azurerm_windows_virtual_machine" "wvd_vm" {
   admin_password = "LocalPass2021"
     
   os_disk {
-    name                 = "DiskName"
+    name                 = "DiskNameGoesHere"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
@@ -154,9 +154,9 @@ resource "azurerm_windows_virtual_machine" "wvd_vm" {
 }
 
 # VM Extension for Domain-join
-resource "azurerm_virtual_machine_extension" "ext_domain_join" {
+resource "azurerm_virtual_machine_extension" "vm1ext_domain_join" {
   name                       = "ExtensionName1GoesHere"
-  virtual_machine_id         = azurerm_windows_virtual_machine.wvd_vm.id
+  virtual_machine_id         = azurerm_windows_virtual_machine.wvd_vm1.id
   publisher                  = "Microsoft.Compute"
   type                       = "JsonADDomainExtension"
   type_handler_version       = "1.3"
@@ -184,9 +184,9 @@ PSETTINGS
 }
 
 # VM Extension for Desired State Config
-resource "azurerm_virtual_machine_extension" "ext_dsc" {
+resource "azurerm_virtual_machine_extension" "vm1ext_dsc" {
   name                       = "ExtensionName2GoesHere"
-  virtual_machine_id         = azurerm_windows_virtual_machine.wvd_vm.id
+  virtual_machine_id         = azurerm_windows_virtual_machine.wvd_vm1.id
   publisher                  = "Microsoft.Powershell"
   type                       = "DSC"
   type_handler_version       = "2.73"
@@ -197,7 +197,7 @@ resource "azurerm_virtual_machine_extension" "ext_dsc" {
       "modulesUrl": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration.zip",
       "configurationFunction": "Configuration.ps1\\AddSessionHost",
       "properties": {
-        "hostPoolName": "HostPoolNameGoesHere",
+        "hostPoolName": "HostPool1NameGoesHere",
         "registrationInfoToken": "${azurerm_virtual_desktop_host_pool.wvd_pool1.registration_info[0].token}"
       }
     }
