@@ -28,7 +28,7 @@ resource "azurerm_resource_group" "wvd_rg" {
 
 # WVD Host Pool Example #1 - Using type of 'Pooled'
 resource "azurerm_virtual_desktop_host_pool" "wvd_pool1" {
-  name                             = "HostPoolNameGoesHere"
+  name                             = "HostPool1NameGoesHere"
   resource_group_name              = azurerm_resource_group.wvd_rg.name
   location                         = azurerm_resource_group.wvd_rg.location
   type                             = "Pooled"
@@ -39,13 +39,13 @@ resource "azurerm_virtual_desktop_host_pool" "wvd_pool1" {
   maximum_sessions_allowed         = 1
 
   registration_info {
-    expiration_date = timeadd(timestamp(), "24h")
+    expiration_date = "2021-03-01T08:00:00Z"
   }
 }
 
 # WVD Host Pool Example #2 - Using type of 'Personal'
 resource "azurerm_virtual_desktop_host_pool" "wvd_pool2" {
-  name                             = "HostPoolNameGoesHere"
+  name                             = "HostPool2NameGoesHere"
   resource_group_name              = azurerm_resource_group.wvd_rg.name
   location                         = azurerm_resource_group.wvd_rg.location
   type                             = "Personal"
@@ -57,13 +57,13 @@ resource "azurerm_virtual_desktop_host_pool" "wvd_pool2" {
   maximum_sessions_allowed         = 1
 
   registration_info {
-    expiration_date = timeadd(timestamp(), "24h")
+    expiration_date = "2021-03-01T08:00:00Z"
   }
 }
 
 # WVD App Group Example #1 - Default Desktop Application Group (DAG)
 resource "azurerm_virtual_desktop_application_group" "wvd_app_group1" {
-  name                = "AppGroupNameGoesHere"
+  name                = "AppGroup1NameGoesHere"
   resource_group_name = azurerm_resource_group.wvd_rg.name
   location            = azurerm_resource_group.wvd_rg.location
   type                = "Desktop"
@@ -74,7 +74,7 @@ resource "azurerm_virtual_desktop_application_group" "wvd_app_group1" {
 
 # WVD App Group Example #2 - RemoteApp Application Group (RAG)
 resource "azurerm_virtual_desktop_application_group" "wvd_app_group2" {
-  name                = "AppGroupNameGoesHere"
+  name                = "AppGroup2NameGoesHere"
   resource_group_name = azurerm_resource_group.wvd_rg.name
   location            = azurerm_resource_group.wvd_rg.location
   type                = "RemoteApp"
@@ -124,7 +124,7 @@ resource "azurerm_network_interface" "wvd_vm_nic" {
 
 # Create the Session Host VM
 resource "azurerm_windows_virtual_machine" "wvd_vm" {
-  name                  = "VirtualMachineNameGoesHere"
+  name                  = "VMNameGoesHere"
   resource_group_name   = azurerm_resource_group.wvd_rg.name
   location              = azurerm_resource_group.wvd_rg.location
   size                  = "Standard_B1s"
@@ -155,7 +155,7 @@ resource "azurerm_windows_virtual_machine" "wvd_vm" {
 
 # VM Extension for Domain-join
 resource "azurerm_virtual_machine_extension" "ext_domain_join" {
-  name                       = "ExtensionNameGoesHere"
+  name                       = "ExtensionName1GoesHere"
   virtual_machine_id         = azurerm_windows_virtual_machine.wvd_vm.id
   publisher                  = "Microsoft.Compute"
   type                       = "JsonADDomainExtension"
@@ -185,7 +185,7 @@ PSETTINGS
 
 # VM Extension for Desired State Config
 resource "azurerm_virtual_machine_extension" "ext_dsc" {
-  name                       = "ExtensionNameGoesHere"
+  name                       = "ExtensionName2GoesHere"
   virtual_machine_id         = azurerm_windows_virtual_machine.wvd_vm.id
   publisher                  = "Microsoft.Powershell"
   type                       = "DSC"
