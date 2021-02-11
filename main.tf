@@ -146,10 +146,10 @@ resource "azurerm_windows_virtual_machine" "wvd_vm" {
   }
 
   source_image_reference {
-    publisher = "Microsoft.WVD"
+    publisher = "MicrosoftWindowsDesktop"
     offer     = "Windows-10"
     sku       = "20h2-evd"                                 # This is the Windows 10 Enterprise Multi-Session image
-    version   = "19042.746.2101092352"
+    version   = "19042.804.2102050012"
   }
 }
 
