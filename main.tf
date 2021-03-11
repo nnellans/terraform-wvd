@@ -162,7 +162,7 @@ resource "azurerm_virtual_machine_extension" "vm1ext_domain_join" {
   type_handler_version       = "1.3"
   auto_upgrade_minor_version = true
 
-  settings = <<SETTINGS
+  settings = <<-SETTINGS
     {
       "Name": "domain.com",
       "OUPath": "OU=secondlevel,OU=firstlevel,DC=domain,DC=com",
@@ -170,13 +170,13 @@ resource "azurerm_virtual_machine_extension" "vm1ext_domain_join" {
       "Restart": "true",
       "Options": "3"
     }
-SETTINGS
+    SETTINGS
 
-  protected_settings = <<PSETTINGS
+  protected_settings = <<-PSETTINGS
     {
       "Password":"AdminPasswordGoesHere"
     }
-PSETTINGS
+    PSETTINGS
 
   lifecycle {
     ignore_changes = [ settings, protected_settings ]
@@ -192,7 +192,7 @@ resource "azurerm_virtual_machine_extension" "vm1ext_dsc" {
   type_handler_version       = "2.73"
   auto_upgrade_minor_version = true
   
-  settings = <<SETTINGS
+  settings = <<-SETTINGS
     {
       "modulesUrl": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration.zip",
       "configurationFunction": "Configuration.ps1\\AddSessionHost",
@@ -201,7 +201,7 @@ resource "azurerm_virtual_machine_extension" "vm1ext_dsc" {
         "registrationInfoToken": "${azurerm_virtual_desktop_host_pool.wvd_pool1.registration_info[0].token}"
       }
     }
-SETTINGS
+    SETTINGS
 
   lifecycle {
     ignore_changes = [ settings ]
